@@ -2,6 +2,8 @@ from turtle import Turtle, Screen
 from paddle import Paddle
 from ball import Ball
 import time
+from scoreboard import Score
+import random
 
 # create screen
 
@@ -18,6 +20,12 @@ paddle_2 = Paddle()
 paddle_2.x_cor = 550
 paddle_2.set_x_cor()
 ball = Ball()
+score_1 = Score()
+score_1.location = (-150, 300)
+score_1.create_score()
+score_2 = Score()
+score_2.location = (120, 300)
+score_2.create_score()
 
 
 # create boundary
@@ -62,8 +70,8 @@ def move_ball():
 def detect_ball_paddle_collision():
     if ball.xcor() < -540:
         for segment in paddle_1.segments:
-            #collision detection debugging print
-            #print(f"dir: {ball.movement_dir}, xcor: {ball.xcor()}, dist: {segment.distance(ball)}")
+            # collision detection debugging print
+            # print(f"dir: {ball.movement_dir}, xcor: {ball.xcor()}, dist: {segment.distance(ball)}")
             if ball.distance(segment) < 10:
                 if ball.movement_dir == 135:
                     ball.movement_dir = 45
@@ -72,12 +80,26 @@ def detect_ball_paddle_collision():
     elif ball.xcor() > 540:
         for segment in paddle_2.segments:
             # collision detection debugging print
-            #print(f"dir: {ball.movement_dir}, xcor: {ball.xcor()}, dist: {segment.distance(ball)}")
+            # print(f"dir: {ball.movement_dir}, xcor: {ball.xcor()}, dist: {segment.distance(ball)}")
             if ball.distance(segment) < 10:
                 if ball.movement_dir == 45:
                     ball.movement_dir = 135
                 elif ball.movement_dir == 315:
                     ball.movement_dir = 225
+
+
+def detect_point_loss():
+    global game_active
+    if ball.xcor() > 560:
+        score_1.raise_score()
+        ball.goto(0, 0)
+        ball.movement_dir = ball.directions[random.randint(0, 3)]
+        ball.ball_speed = 5
+    elif ball.xcor() < -560:
+        score_2.raise_score()
+        ball.goto(0, 0)
+        ball.movement_dir = ball.directions[random.randint(0, 3)]
+        ball.ball_speed = 5
 
 
 game_active = True
@@ -94,13 +116,20 @@ screen.onkeyrelease(paddle_2.reset_pad_dir, "i")
 screen.onkeypress(paddle_2.set_pad_dir_down, "k")
 screen.onkeyrelease(paddle_2.reset_pad_dir, "k")
 
+game_tick = 0
+tick_duration = 0.025
+
 while game_active:
     move_ball()
     paddle_1.pad_moving()
     paddle_2.pad_moving()
     ball.detect_ball_wall_collide()
     detect_ball_paddle_collision()
-    time.sleep(0.025)
+    detect_point_loss()
+    game_tick += 1
+    if game_tick % 200 == 0:
+        ball.ball_speed *= 1.1
+    time.sleep(tick_duration)
     screen.update()
 
 

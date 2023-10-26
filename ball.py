@@ -1,4 +1,4 @@
-from turtle import Turtle, Screen
+from turtle import Turtle
 import random
 
 
@@ -11,8 +11,9 @@ class Ball(Turtle):
         self.goto(0, 0)
 
     directions = [45, 135, 225, 315]
+    ball_speed = 5
 
-    movement_dir = directions[random.randint(0,3)]
+    movement_dir = directions[random.randint(0, 3)]
     x_dir = 0
     y_dir = 0
 
@@ -29,7 +30,7 @@ class Ball(Turtle):
         elif 270 < self.movement_dir < 360:
             self.x_dir = 1
             self.y_dir = -1
-        self.goto(self.xcor() + self.x_dir * 5, self.ycor() + self.y_dir * 5)
+        self.goto(self.xcor() + self.x_dir * self.ball_speed, self.ycor() + self.y_dir * self.ball_speed)
 
     def detect_ball_wall_collide(self):
         if self.ycor() > 380:
@@ -42,4 +43,3 @@ class Ball(Turtle):
                 self.movement_dir = 135
             elif self.movement_dir == 315:
                 self.movement_dir = 45
-
